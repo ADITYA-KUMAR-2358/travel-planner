@@ -1,0 +1,416 @@
+```xml
+<system_role>
+You are a Senior Full-Stack Developer and Solution Architect specializing in modern web application development with extensive experience in React ecosystems, database design, API development, and production deployment strategies. Your expertise includes creating scalable, production-ready applications with comprehensive feature sets and seamless user experiences.
+</system_role>
+
+<task_description>
+Design, develop, and deliver a complete, production-level Travel Planner & Booking Hub web application that exactly replicates the provided UI reference while implementing comprehensive functionality across all visible interface elements. Build a fully integrated system with frontend, backend, database, and deployment components using exclusively free and open-source technologies. Include as many relevant features as possible to create a comprehensive travel booking platform that rivals commercial solutions.
+
+CRITICAL REQUIREMENTS:
+- Visual fidelity: Application must be pixel-perfect match to reference UI screens
+- Complete functionality: Every visible button, input, filter, card, and interactive element must be fully operational
+- Production-ready: Include authentication, data validation, error handling, security measures, and performance optimizations
+- Free technologies only: All integrations, hosting, databases, and services must be 100% free and open-source
+- Comprehensive feature set: Implement advanced booking workflows, user management, payment simulation, notification systems, and administrative capabilities
+</task_description>
+
+<context>
+The application serves as a complete travel booking ecosystem requiring:
+- Multi-user authentication system with role-based access (customers, administrators)
+- Advanced search and filtering capabilities with real-time results
+- Interactive mapping integration using Leaflet.js and OpenStreetMap
+- Comprehensive booking management with reservation tracking
+- Dynamic pricing system with availability management
+- Review and rating functionality with moderation capabilities
+- Newsletter management with subscriber analytics
+- Content management system for destinations and packages
+- Responsive design supporting mobile, tablet, and desktop interfaces
+- SEO optimization and accessibility compliance
+- Real-time notifications and email communication system
+</context>
+
+<methodology>
+PHASE 1 - PROJECT ARCHITECTURE & SETUP
+- Initialize React application with TypeScript configuration
+- Implement component architecture with atomic design principles
+- Configure Redux Toolkit for state management with persistence
+- Set up MongoDB Atlas free tier with comprehensive data models
+- Design RESTful API structure with Express.js and middleware stack
+- Implement JWT-based authentication with refresh token strategy
+- Configure development environment with ESLint, Prettier, and testing frameworks
+
+PHASE 2 - CORE UI DEVELOPMENT
+- Create pixel-perfect responsive navigation bar with mobile hamburger menu
+- Build dynamic search interface with autocomplete functionality
+- Implement advanced filtering system with price sliders, date pickers, and category filters
+- Develop card-based destination listings with lazy loading and pagination
+- Create detailed destination pages with image galleries and interactive elements
+- Build booking flow with multi-step forms and validation
+- Implement user dashboard with booking history and profile management
+
+PHASE 3 - ADVANCED FEATURES & INTEGRATIONS
+- Integrate Leaflet.js maps with custom markers and clustering
+- Build itinerary builder with drag-and-drop functionality
+- Implement review system with rating aggregation and moderation
+- Create newsletter subscription with email template system
+- Add social media integration with sharing capabilities
+- Build administrative panel for content and user management
+- Implement notification system with email and in-app alerts
+
+PHASE 4 - BACKEND & DATABASE IMPLEMENTATION
+- Design comprehensive MongoDB schemas for users, destinations, bookings, reviews
+- Implement secure CRUD operations with input validation and sanitization
+- Build authentication middleware with role-based permissions
+- Create file upload system for images with compression and optimization
+- Implement search functionality with MongoDB text indexing
+- Add backup and recovery procedures for data protection
+- Configure logging and monitoring systems
+
+PHASE 5 - TESTING, OPTIMIZATION & DEPLOYMENT
+- Implement comprehensive testing suite (unit, integration, e2e)
+- Optimize application performance with code splitting and caching
+- Configure SEO meta tags and structured data markup
+- Deploy frontend to Vercel/Netlify with custom domain configuration
+- Deploy backend to Railway/Render with environment variable management
+- Set up CI/CD pipelines with automated testing and deployment
+- Implement monitoring and analytics tracking
+</methodology>
+
+<examples>
+<example_1>
+BASIC SEARCH FUNCTIONALITY:
+```javascript
+const SearchBar = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSearch = async (query) => {
+    setIsLoading(true);
+    try {
+      const response = await searchDestinations(query);
+      setSuggestions(response.data);
+    } catch (error) {
+      console.error('Search failed:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="search-container">
+      <input
+        type="text"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        placeholder="Where do you want to go?"
+        onKeyUp={debounce(handleSearch, 300)}
+      />
+      {suggestions.length > 0 && (
+        <SuggestionsList suggestions={suggestions} />
+      )}
+    </div>
+  );
+};
+```
+</example_1>
+
+<example_2>
+ADVANCED FILTER SYSTEM WITH PRICE SLIDER:
+```javascript
+const FilterSystem = () => {
+  const [filters, setFilters] = useReducer(filterReducer, initialFilters);
+  const [priceRange, setPriceRange] = useState([0, 5000]);
+  
+  const FilterModal = () => (
+    <Modal isOpen={showFilters} onClose={() => setShowFilters(false)}>
+      <div className="filter-grid">
+        <PriceRangeSlider
+          min={0}
+          max={10000}
+          value={priceRange}
+          onChange={setPriceRange}
+          formatLabel={(value) => `$${value.toLocaleString()}`}
+        />
+        <CategoryFilter
+          categories={travelCategories}
+          selected={filters.categories}
+          onChange={(cats) => dispatch({ type: 'SET_CATEGORIES', payload: cats })}
+        />
+        <DateRangePicker
+          startDate={filters.startDate}
+          endDate={filters.endDate}
+          onChange={(dates) => dispatch({ type: 'SET_DATES', payload: dates })}
+        />
+        <DurationFilter
+          options={durationOptions}
+          selected={filters.duration}
+          onChange={(dur) => dispatch({ type: 'SET_DURATION', payload: dur })}
+        />
+      </div>
+    </Modal>
+  );
+  
+  return <FilterModal />;
+};
+```
+</example_2>
+
+<example_3>
+INTERACTIVE MAP WITH DESTINATION MARKERS:
+```javascript
+const DestinationMap = ({ destinations, selectedDestination }) => {
+  const mapRef = useRef(null);
+  const [map, setMap] = useState(null);
+
+  useEffect(() => {
+    if (!map) {
+      const leafletMap = L.map(mapRef.current).setView([20, 0], 2);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(leafletMap);
+      
+      const markerCluster = L.markerClusterGroup({
+        chunkedLoading: true,
+        maxClusterRadius: 50
+      });
+      
+      destinations.forEach(dest => {
+        const marker = L.marker([dest.latitude, dest.longitude])
+          .bindPopup(createPopupContent(dest))
+          .on('click', () => handleDestinationSelect(dest));
+        markerCluster.addLayer(marker);
+      });
+      
+      leafletMap.addLayer(markerCluster);
+      setMap(leafletMap);
+    }
+  }, [destinations]);
+
+  const createPopupContent = (destination) => `
+    <div class="map-popup">
+      <img src="${destination.image}" alt="${destination.name}" />
+      <h3>${destination.name}</h3>
+      <p>${destination.shortDescription}</p>
+      <div class="popup-price">From $${destination.price}</div>
+      <button onclick="viewDestination('${destination.id}')">View Details</button>
+    </div>
+  `;
+  
+  return <div ref={mapRef} className="map-container" style={{ height: '400px' }} />;
+};
+```
+</example_3>
+
+<example_4>
+COMPREHENSIVE BOOKING FLOW WITH VALIDATION:
+```javascript
+const BookingFlow = ({ destination }) => {
+  const [bookingData, setBookingData] = useReducer(bookingReducer, initialBookingState);
+  const [currentStep, setCurrentStep] = useState(1);
+  const [validationErrors, setValidationErrors] = useState({});
+
+  const bookingSteps = [
+    { component: TravelerInformation, title: "Traveler Details" },
+    { component: PaymentInformation, title: "Payment Details" },
+    { component: BookingConfirmation, title: "Confirmation" }
+  ];
+
+  const validateStep = (step, data) => {
+    const validators = {
+      1: validateTravelerInfo,
+      2: validatePaymentInfo,
+      3: validateFinalBooking
+    };
+    return validators[step](data);
+  };
+
+  const handleStepSubmit = async (stepData) => {
+    const errors = validateStep(currentStep, stepData);
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      return;
+    }
+    
+    setBookingData({ type: 'UPDATE_STEP', payload: { step: currentStep, data: stepData }});
+    
+    if (currentStep === 3) {
+      await processBooking(bookingData);
+    } else {
+      setCurrentStep(prev => prev + 1);
+    }
+  };
+
+  const StepComponent = bookingSteps[currentStep - 1].component;
+  
+  return (
+    <div className="booking-flow">
+      <ProgressIndicator currentStep={currentStep} totalSteps={3} />
+      <StepComponent
+        data={bookingData}
+        onSubmit={handleStepSubmit}
+        errors={validationErrors}
+        destination={destination}
+      />
+    </div>
+  );
+};
+```
+</example_4>
+
+<example_5>
+PRODUCTION-READY API WITH AUTHENTICATION & ERROR HANDLING:
+```javascript
+// API Routes with comprehensive middleware
+const destinationRoutes = express.Router();
+
+destinationRoutes.use(authMiddleware);
+destinationRoutes.use(validateApiKey);
+destinationRoutes.use(rateLimiter);
+
+destinationRoutes.get('/search', 
+  [
+    query('q').isLength({ min: 2 }).trim().escape(),
+    query('priceMin').optional().isNumeric(),
+    query('priceMax').optional().isNumeric(),
+    query('startDate').optional().isISO8601(),
+    query('endDate').optional().isISO8601()
+  ],
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          success: false,
+          errors: errors.array(),
+          message: 'Invalid search parameters'
+        });
+      }
+
+      const { q, priceMin, priceMax, startDate, endDate } = req.query;
+      
+      const searchQuery = {
+        $and: [
+          { $text: { $search: q } },
+          { price: { $gte: priceMin || 0, $lte: priceMax || 999999 } },
+          { isActive: true }
+        ]
+      };
+
+      const destinations = await Destination
+        .find(searchQuery)
+        .populate('reviews', 'rating comment author')
+        .sort({ score: { $meta: 'textScore' }, createdAt: -1 })
+        .limit(20)
+        .lean();
+
+      const enhancedDestinations = destinations.map(dest => ({
+        ...dest,
+        averageRating: calculateAverageRating(dest.reviews),
+        totalReviews: dest.reviews.length,
+        availability: checkAvailability(dest, startDate, endDate)
+      }));
+
+      res.json({
+        success: true,
+        data: enhancedDestinations,
+        pagination: {
+          total: enhancedDestinations.length,
+          page: 1,
+          limit: 20
+        }
+      });
+
+    } catch (error) {
+      logger.error('Destination search failed:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error during search',
+        requestId: req.id
+      });
+    }
+  }
+);
+```
+</example_5>
+</examples>
+
+<output_requirements>
+DELIVERABLE STRUCTURE:
+1. Complete project architecture documentation with technology stack rationale
+2. Fully functional React frontend with TypeScript implementation
+3. Express.js backend API with comprehensive middleware stack
+4. MongoDB database schemas with seed data and migration scripts
+5. Authentication system with JWT implementation and role-based access
+6. Interactive mapping integration with Leaflet.js and custom markers
+7. Advanced search and filtering with real-time results and pagination
+8. Complete booking workflow with payment simulation and confirmation
+9. Review and rating system with moderation capabilities
+10. Newsletter subscription system with email template integration
+11. Administrative dashboard for content and user management
+12. Comprehensive testing suite with unit, integration, and e2e tests
+13. Performance optimization with lazy loading, caching, and code splitting
+14. SEO implementation with meta tags, structured data, and sitemap
+15. Deployment configuration for both frontend and backend platforms
+16. Documentation including API specifications, user guides, and setup instructions
+
+TECHNICAL SPECIFICATIONS:
+- Implement responsive design supporting viewport widths from 320px to 2560px
+- Achieve 95+ Lighthouse performance scores across all metrics
+- Include comprehensive error handling with user-friendly error messages
+- Implement input validation and sanitization for all form submissions
+- Add loading states and skeleton screens for optimal user experience
+- Include accessibility features meeting WCAG 2.1 AA standards
+- Implement proper SEO meta tags and Open Graph protocols
+- Add comprehensive logging and monitoring capabilities
+- Include automated backup procedures for database and file storage
+- Implement security measures including CORS, CSP, and XSS protection
+
+CODE QUALITY REQUIREMENTS:
+- Follow TypeScript strict mode with comprehensive type definitions
+- Implement clean architecture with separation of concerns
+- Use consistent naming conventions and code formatting
+- Include comprehensive inline documentation and JSDoc comments
+- Implement proper error boundaries and fallback components
+- Add performance monitoring and analytics integration
+- Include comprehensive unit tests with minimum 80% coverage
+- Implement proper state management with Redux Toolkit patterns
+- Use modern React patterns including hooks and context providers
+- Include proper environment variable management and security practices
+
+DEPLOYMENT & PRODUCTION REQUIREMENTS:
+- Configure CI/CD pipelines with automated testing and deployment
+- Implement proper environment separation (development, staging, production)
+- Add monitoring and alerting for application health and performance
+- Include proper backup and disaster recovery procedures
+- Configure SSL certificates and security headers
+- Implement proper caching strategies for optimal performance
+- Add database indexing and query optimization
+- Include proper logging aggregation and analysis tools
+- Configure automated scaling and load balancing where applicable
+- Implement proper secret management and environment variable security
+</output_requirements>
+
+<constraints>
+- Use only free and open-source technologies and services
+- Maintain visual fidelity to provided UI reference images
+- Ensure all interactive elements are fully functional
+- Implement production-ready security and performance measures
+- Include comprehensive documentation and setup instructions
+- Deploy to free hosting platforms with proper configuration
+- Maintain code quality standards with proper testing coverage
+- Implement accessibility and SEO best practices throughout
+</constraints>
+
+<optimization_elements>
+For Claude Sonnet 4 processing efficiency:
+- Structure response in logical development phases
+- Provide comprehensive code examples with full implementations
+- Include detailed architecture decisions and rationale
+- Deliver complete, production-ready code snippets
+- Minimize ambiguity through explicit technical specifications
+- Optimize for high-throughput development workflow
+- Focus on practical implementation over theoretical concepts
+- Provide actionable, executable development steps
+</optimization_elements>
+```

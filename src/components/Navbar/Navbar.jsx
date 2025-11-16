@@ -1,84 +1,102 @@
-import { useState } from 'react'
-import "./navbar.css"
+import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { logout } from '../../store/slices/authSlice';
+import { SiYourtraveldottv } from 'react-icons/si';
+import { AiFillCloseCircle } from 'react-icons/ai';
+import { TbGridDots } from 'react-icons/tb';
+import { FaUser } from 'react-icons/fa';
+import { toast } from 'react-toastify';
+import './navbar.css';
 
-import { AiFillCloseCircle } from 'react-icons/ai'
-import { MdTravelExplore } from 'react-icons/md'
-import { TbGridDots } from 'react-icons/tb'
+const Navbar = () => {
+  const [active, setActive] = useState('navBar');
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-export const Navbar = () => {
+  const showNav = () => {
+    setActive('navBar activeNavbar');
+  };
 
-    const [active, setActive] = useState('navBar') ;
+  const removeNavbar = () => {
+    setActive('navBar');
+  };
 
-    // function to toggle navBar
-    const showNav = ()=> {
-        setActive('navBar activeNavbar');
-    }
-
-    // function to remove navBar
-    const removeNavbar = ()=> {
-        setActive('navBar');
-    }
-
+  const handleLogout = () => {
+    dispatch(logout());
+    toast.success('Logged out successfully');
+    navigate('/');
+  };
 
   return (
-    <section className='navBarSection' >
-        <header className='header flex'>
-            <div className='logoDiv'>
-                <a href='#' className='logo flex'>
-                    <h1> <MdTravelExplore className='icon' /> Roamio</h1>
-                </a>
-            </div>
+    <section className='navBarSection'>
+      <header className="header flex">
+        <div className="logoDiv">
+          <Link to="/" className="logo flex">
+            <h1><SiYourtraveldottv className="icon" /> Roamio</h1>
+          </Link>
+        </div>
 
-            <div className={active}>
-                <ul className='navList flex'>
+        <div className={active}>
+          <ul className="navLists flex">
+            <li className="navItem">
+              <Link to="/" className="navLink" onClick={removeNavbar}>Home</Link>
+            </li>
 
-                    <li className='navItem'>
-                        <a href='#' className='navLink'>Home</a>
-                    </li>
+            <li className="navItem">
+              <Link to="/destinations" className="navLink" onClick={removeNavbar}>Destinations</Link>
+            </li>
 
-                    <li className='navItem'>
-                        <a href='#' className='navLink'>Packages</a>
-                    </li>
+            <li className="navItem">
+              <a href="#about" className="navLink" onClick={removeNavbar}>About</a>
+            </li>
 
-                    <li className='navItem'>
-                        <a href='#' className='navLink'>Shop</a>
-                    </li>
+            <li className="navItem">
+              <a href="#contact" className="navLink" onClick={removeNavbar}>Contact</a>
+            </li>
 
-                    <li className='navItem'>
-                        <a href='#' className='navLink'>About</a>
-                    </li>
+            {isAuthenticated ? (
+              <>
+                <li className="navItem">
+                  <div className="user-info flex">
+                    <FaUser className="user-icon" />
+                    <span>{user?.name}</span>
+                  </div>
+                </li>
+                <li className="navItem">
+                  <button onClick={handleLogout} className="btn logout-btn">
+                    Logout
+                  </button>
+                </li>
+              </>
+            ) : (
+              <>
+                <li className="navItem">
+                  <Link to="/login" onClick={removeNavbar}>
+                    <button className="btn">Login</button>
+                  </Link>
+                </li>
+                <li className="navItem">
+                  <Link to="/register" onClick={removeNavbar}>
+                    <button className="btn">Sign Up</button>
+                  </Link>
+                </li>
+              </>
+            )}
+          </ul>
 
-                    <li className='navItem'>
-                        <a href='#' className='navLink'>Pages</a>
-                    </li>
+          <div onClick={removeNavbar} className="closeNavbar">
+            <AiFillCloseCircle className="icon" />
+          </div>
+        </div>
 
-                    <li className='navItem'>
-                        <a href='#' className='navLink'>News</a>
-                    </li>
-
-                    <li className='navItem'>
-                        <a href='#' className='navLink'>Contact</a>
-                    </li>
-
-                    <button className='btn'>
-                        <a href="#">BOOK NOW</a>
-                    </button>
-
-                </ul>
-
-                <div onClick={removeNavbar} className="closeNavbar">
-                    <AiFillCloseCircle className='icon'/>
-                </div>
-
-            </div>
-
-            <div onClick={showNav} className="toggleNavbar">
-                    < TbGridDots className='icon' />
-            </div>
-
-        </header>
+        <div onClick={showNav} className="toggleNavbar">
+          <TbGridDots className="icon" />
+        </div>
+      </header>
     </section>
-  )
-}
+  );
+};
 
 export default Navbar;
