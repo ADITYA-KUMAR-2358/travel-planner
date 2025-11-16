@@ -59,30 +59,28 @@ const Navbar = () => {
             {isAuthenticated ? (
               <>
                 <li className="navItem">
-                  <div className="user-info flex">
+                  <div className="user-info">
                     <FaUser className="user-icon" />
                     <span>{user?.name}</span>
                   </div>
                 </li>
                 <li className="navItem">
-                  <button onClick={handleLogout} className="btn logout-btn">
+                  <button onClick={handleLogout} className="logout-btn">
                     Logout
                   </button>
                 </li>
               </>
             ) : (
-              <>
-                <li className="navItem">
+              <li className="navItem">
+                <div className="auth-buttons-container">
                   <Link to="/login" onClick={removeNavbar}>
-                    <button className="btn">Login</button>
+                    <button className="auth-btn login-btn">Login</button>
                   </Link>
-                </li>
-                <li className="navItem">
                   <Link to="/register" onClick={removeNavbar}>
-                    <button className="btn">Sign Up</button>
+                    <button className="auth-btn signup-btn">Sign Up</button>
                   </Link>
-                </li>
-              </>
+                </div>
+              </li>
             )}
           </ul>
 

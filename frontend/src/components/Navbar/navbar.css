@@ -136,4 +136,108 @@
   .header {
     padding: 1rem 8.5rem;
   }
+}
+
+/* Enhanced Auth Button Styles */
+.auth-buttons-container {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.auth-btn {
+  padding: 0.6rem 1.5rem;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.login-btn {
+  background: transparent;
+  color: var(--PrimaryColor);
+  border: 2px solid var(--PrimaryColor);
+}
+
+.login-btn:hover {
+  background: var(--PrimaryColor);
+  color: var(--whiteColor);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 119, 182, 0.3);
+}
+
+.signup-btn {
+  background: var(--gradientColor);
+  color: var(--whiteColor);
+  border: 2px solid transparent;
+}
+
+.signup-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 119, 182, 0.4);
+  filter: brightness(1.1);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--whiteColor);
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-info .user-icon {
+  color: var(--PrimaryColor);
+  font-size: 1.1rem;
+}
+
+.user-info span {
+  color: var(--blackColor);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.logout-btn {
+  background: #ff4757;
+  color: var(--whiteColor);
+  padding: 0.6rem 1.5rem;
+  border-radius: 25px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: #ee5a6f;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
+}
+
+@media screen and (max-width: 768px) {
+  .auth-buttons-container {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.5rem;
+  }
+  
+  .auth-btn {
+    width: 100%;
+  }
+  
+  .user-info {
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .logout-btn {
+    width: 100%;
+  }
 }/*# sourceMappingURL=navbar.css.map */
